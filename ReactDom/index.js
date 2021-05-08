@@ -2,24 +2,39 @@ const ReactDom = {}
 /**
  * 将虚拟节点转换成真实节点，渲染到目标节点的子节点下
  */
-ReactDom.render = function (vnode,container,callback) {
+
+ReactDom.render = function(vnode,container,callback){
+  // 每一次render时，清空里面的内容
+  container.innerHTML = '';
+  // 获得渲染的真实节点
+  const realNode = _render(vnode);
+  const containerNode = container.appendChild(realNode);
+  callback && callback()
+  return containerNode;
+}
+
+
+function _render(vnode) {
+  if ( typeof vnode.tag === 'function' ) {
+    // 组件类，会直接返回一个函数给我们
+    const component = createComponent( vnode.tag, vnode.attrs );
+    setComponentProps( component, vnode.attrs );
+    return component.base;
+  }
   let realNode;
-  if (typeof vnode === "string"){
+  if ( vnode === undefined || vnode === null || typeof vnode === 'boolean' ) vnode = '';
+  if (typeof vnode === "string" || typeof vnode === "number"){
     // 当为字符串时，直接创建文本节点
-    realNode = document.createTextNode(vnode);   
+    realNode = document.createTextNode(String( vnode ));   
   } else {
     // 根据虚拟DOM创建真实DOM
     realNode = document.createElement(vnode.type);
     // 添加属性
     realNode.props && Object.keys(realNode.props).forEach(key => setAttribute(realNode,key,realNode.props[key]));
     // 开始套娃，套子节点
-    vnode.children.forEach(child => this.render(child,realNode));
+    vnode.children.forEach(child => render(child,realNode));
   }
-  // 渲染到目标容器的子节点下
-  const containerNode = container.appendChild(realNode);
-  // 渲染之后执行回调函数
-  callback && callback();
-  return containerNode;
+  return realNode;
 }
 
 /**

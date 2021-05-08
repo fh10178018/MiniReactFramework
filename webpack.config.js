@@ -18,7 +18,19 @@ module.exports = {
     rules: [{
       test: /\.css$/,
       use: ['style-loader', 'css-loader']
-    }]
+    },
+    {
+      test: /\.js|jsx|ts|tsx$/,
+      use: {
+        loader: 'babel-loader',
+        options:{
+          presets: ['@babel/preset-env'],
+          plugins: [['@babel/plugin-transform-react-jsx', { pragma: 'React.createElement'}]] // jsx片段会被转译成用React.createElement方法包裹的代码
+        }
+      },
+      exclude: /node_modules/
+    }
+  ]
   },
   plugins: [
     new htmlWebpackPlugin({   //创建一个在内存中生成html页面的插件
@@ -28,7 +40,7 @@ module.exports = {
     }),
     new webpack.HotModuleReplacementPlugin()
   ],
-  entry: path.resolve(__dirname, 'index.js'), // 设置入口运行文件
+  entry: path.resolve(__dirname, 'index.jsx'), // 设置入口运行文件
   mode: 'development', // 设置mode
   target: ['es5']
 }

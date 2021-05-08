@@ -2,7 +2,6 @@
   "name": "MiniReactFramework",
   "version": "1.0.0",
   "description": "奔着学习的态度去开发一个react框架",
-  "main": "index.js",
   "scripts": {
     "start": "webpack serve --mode development --open",
     "build": "webpack --mode production"
@@ -20,10 +19,14 @@
   "homepage": "https://github.com/fh10178018/MiniReactFramework#readme",
   "dependencies": {
     "html-webpack-plugin": "^5.3.1",
-    "webpack": "^5.36.1",
     "webpack-dev-server": "^3.11.2"
   },
   "devDependencies": {
+    "@babel/core": "^7.14.0",
+    "@babel/plugin-transform-react-jsx": "^7.13.12",
+    "@babel/preset-env": "^7.14.1",
+    "babel-loader": "^8.2.2",
+    "webpack": "^5.36.2",
     "webpack-cli": "^4.7.0"
   }
 }
