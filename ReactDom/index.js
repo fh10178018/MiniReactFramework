@@ -1,3 +1,4 @@
+import React from "../React/index"
 const ReactDom = {} 
 /**
  * 将虚拟节点转换成真实节点，渲染到目标节点的子节点下
@@ -16,7 +17,7 @@ ReactDom.render = function(vnode,container,callback){
 
 function _render(vnode) {
   if ( typeof vnode.tag === 'function' ) {
-    // 组件类，会直接返回一个函数给我们
+    // transform-react-jsx插件翻译组件，会直接返回一个函数给我们
     const component = createComponent( vnode.tag, vnode.attrs );
     setComponentProps( component, vnode.attrs );
     return component.base;
@@ -67,6 +68,63 @@ function setAttribute(dom,key,value) {
       dom.removeAttribute( key );
     }
   } 
+}
+
+/**
+ * react组件渲染周期部分
+ */
+// 创建组件的时候
+function createComponent(component, props){
+  let inst;
+  // 如果是类定义组件，直接返回实例
+  if (component.prototype && component.prototype.render) {
+    inst = new component(props);
+  } else {
+    inst = new React.Component(props);
+    inst.constructor = component;
+    inst.render = function() {
+      return this.constructor(props);
+    }
+  }
+  return inst
+}
+
+// 组件数据初始化
+function setComponentProps( component, props ) {
+  if ( !component.base ) {
+    // 组件将要挂载的时候，也就是组件第一次生成
+    if ( component.componentWillMount ) component.componentWillMount();
+  } else if ( component.componentWillReceiveProps ) {
+    // 这里指的是，组件props的值发生变化，从而更新组件
+    component.componentWillReceiveProps( props );
+  }
+  component.props = props;
+  // 数据初始化完成，开始渲染数据
+  renderComponent( component );
+}
+
+export function renderComponent( component ) {
+  let base;
+  const renderer = component.render();
+  if ( component.base && component.componentWillUpdate ) {
+    // 组件将要更新
+    component.componentWillUpdate();
+  }
+  replaceNode = _render( renderer );
+  // 组件没有挂载更新之前，但已经通过render生成真实DOM元素
+  if ( component.base ) {
+    if ( component.componentDidUpdate ) component.componentDidUpdate();
+  } else if ( component.componentDidMount ) {
+    component.componentDidMount();
+  }
+  // 找到父节点，通过父节点更新节点
+  if ( component.base && component.base.parentNode ) {
+    component.base.parentNode.replaceChild( replaceNode, component.base );
+  }
+  // 用 component.base 保存已经更新的节点元素
+  component.base = replaceNode;
+  // 形成闭环
+  base._component = component;
 }
 
 export default ReactDom;

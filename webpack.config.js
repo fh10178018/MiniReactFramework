@@ -3,10 +3,11 @@ const path = require('path')
 const webpack = require('webpack')
 console.log(__dirname)
 module.exports = {
+  devtool: 'inline-source-map',
   devServer: {
     contentBase: './build',
     host: 'localhost',
-    port: 3000,
+    port: 3003,
     open: true
   },
   output: {

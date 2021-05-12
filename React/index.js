@@ -1,9 +1,13 @@
- const React = {} 
+ const React = {};
+ import { renderComponent } from '../ReactDom/index';
+
+ React.createElement = createElement;
+ React.Component = Component;
 
 /**
  * 生成React虚拟节点
  */
-React.createElement = function (type,props,...children) {
+var createElement = function (type,props,...children) {
   return {
     type,
     props,
@@ -16,6 +20,12 @@ class Component {
     this.state ={};
     this.props = props;
   }
+  setState(changeVal){
+    // 这里用尝试用异步的方法更新内容
+    Object.assign(this.state, changeVal)
+    // 利用renderComponent方法去重新渲染组件
+    renderComponent(this);
+  }
 }
 
- export default React
+ export default React;
