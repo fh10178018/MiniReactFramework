@@ -3,7 +3,7 @@ const path = require('path')
 const webpack = require('webpack')
 console.log(__dirname)
 module.exports = {
-  devtool: 'inline-source-map',
+  devtool: 'cheap-module-source-map',
   devServer: {
     contentBase: './build',
     host: 'localhost',
@@ -15,11 +15,17 @@ module.exports = {
     filename: '[name].min.js',
     chunkFilename: '[chunkhash].chunk.min.js'
   },
+  resolve: {
+    // 自动补全的扩展名
+    extensions: ['.js', '.jsx', '.ts','tsx'],
+    // 默认路径代理
+    alias: {
+        'React$': path.resolve(__dirname,'React/index'),
+        'ReactDom$': path.resolve(__dirname,'ReactDom/index')
+    }
+  },
   module: {
-    rules: [{
-      test: /\.css$/,
-      use: ['style-loader', 'css-loader']
-    },
+    rules: [
     {
       test: /\.js|jsx|ts|tsx$/,
       use: {

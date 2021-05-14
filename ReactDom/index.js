@@ -1,10 +1,9 @@
 import React from "../React/index"
-const ReactDom = {} 
 /**
  * 将虚拟节点转换成真实节点，渲染到目标节点的子节点下
  */
 
-ReactDom.render = function(vnode,container,callback){
+function render (vnode,container,callback){
   // 每一次render时，清空里面的内容
   container.innerHTML = '';
   // 获得渲染的真实节点
@@ -16,10 +15,10 @@ ReactDom.render = function(vnode,container,callback){
 
 
 function _render(vnode) {
-  if ( typeof vnode.tag === 'function' ) {
+  if ( typeof vnode.type === 'function' ) {
     // transform-react-jsx插件翻译组件，会直接返回一个函数给我们
-    const component = createComponent( vnode.tag, vnode.attrs );
-    setComponentProps( component, vnode.attrs );
+    const component = createComponent( vnode.type, vnode.props );
+    setComponentProps( component, vnode.props );
     return component.base;
   }
   let realNode;
@@ -31,7 +30,7 @@ function _render(vnode) {
     // 根据虚拟DOM创建真实DOM
     realNode = document.createElement(vnode.type);
     // 添加属性
-    realNode.props && Object.keys(realNode.props).forEach(key => setAttribute(realNode,key,realNode.props[key]));
+    vnode.props && Object.keys(vnode.props).forEach(key => setAttribute(realNode,key,vnode.props[key]));
     // 开始套娃，套子节点
     vnode.children.forEach(child => render(child,realNode));
   }
@@ -127,4 +126,6 @@ export function renderComponent( component ) {
   base._component = component;
 }
 
-export default ReactDom;
+export default {
+  render
+};

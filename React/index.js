@@ -1,9 +1,4 @@
- const React = {};
  import { renderComponent } from '../ReactDom/index';
-
- React.createElement = createElement;
- React.Component = Component;
-
 /**
  * 生成React虚拟节点
  */
@@ -28,4 +23,7 @@ class Component {
   }
 }
 
- export default React;
+ export default {
+  createElement,
+  Component
+ };

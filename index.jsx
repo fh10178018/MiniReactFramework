@@ -1,10 +1,10 @@
-import React from "./React/index"
-import ReactDom from "./ReactDom/index"
-import HelloClass from "./HelloClass.jsx"
+import React from "React"
+import ReactDom from "ReactDom"
+
 
 ReactDom.render(
   <div className="asd">
-    <HelloClass name="Hello Word！(class component)"/>
+    asd
   </div>,
   document.getElementById('root')
 )

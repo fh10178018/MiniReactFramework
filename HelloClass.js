@@ -1,5 +1,4 @@
-import React from "./React/index";
-console.log(React.Component)
+import React from "React";
 class HelloClass extends React.Component{
   constructor( props ) {
     super(props);
