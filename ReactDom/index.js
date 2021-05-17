@@ -15,6 +15,7 @@ function render (vnode,container,callback){
 
 
 function _render(vnode) {
+  if ( vnode === undefined || vnode === null || typeof vnode === 'boolean' ) vnode = '';
   if ( typeof vnode.type === 'function' ) {
     // transform-react-jsx插件翻译组件，会直接返回一个函数给我们
     /**
@@ -30,7 +31,6 @@ function _render(vnode) {
     return component.base;
   }
   let realNode;
-  if ( vnode === undefined || vnode === null || typeof vnode === 'boolean' ) vnode = '';
   if (typeof vnode === "string" || typeof vnode === "number"){
     // 当为字符串时，直接创建文本节点
     realNode = document.createTextNode(String( vnode ));   
