@@ -17,6 +17,14 @@ function render (vnode,container,callback){
 function _render(vnode) {
   if ( typeof vnode.type === 'function' ) {
     // transform-react-jsx插件翻译组件，会直接返回一个函数给我们
+    /**
+     * 如下所示
+     * {
+     *  children: [],
+     *  type: ƒ HelloClass(props),
+     *  props: {title: "hello world!"}
+     * }
+     */
     const component = createComponent( vnode.type, vnode.props );
     setComponentProps( component, vnode.props );
     return component.base;
@@ -103,13 +111,13 @@ function setComponentProps( component, props ) {
 }
 
 export function renderComponent( component ) {
-  let base;
+  let base = {};
   const renderer = component.render();
   if ( component.base && component.componentWillUpdate ) {
     // 组件将要更新
     component.componentWillUpdate();
   }
-  replaceNode = _render( renderer );
+  const replaceNode = _render( renderer );
   // 组件没有挂载更新之前，但已经通过render生成真实DOM元素
   if ( component.base ) {
     if ( component.componentDidUpdate ) component.componentDidUpdate();

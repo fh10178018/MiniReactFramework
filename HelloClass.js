@@ -5,7 +5,7 @@ class HelloClass extends React.Component{
   }
   render(){
     return (
-      <strong>{this.props.name}</strong>
+      <strong>{this.props.title}</strong>
     );
   }
 }
