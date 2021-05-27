@@ -1,4 +1,4 @@
- import { renderComponent } from '../ReactDom/index';
+ import ReactDom from '../ReactDom/index';
 /**
  * 生成React虚拟节点
  */
@@ -19,11 +19,11 @@ class Component {
     // 这里用尝试用异步的方法更新内容
     Object.assign(this.state, changeVal)
     // 利用renderComponent方法去重新渲染组件
-    renderComponent(this);
+    ReactDom.renderComponent(this);
   }
 }
 
- export default {
+export default {
   createElement,
   Component
- };
+};
