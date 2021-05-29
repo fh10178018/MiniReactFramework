@@ -1,3 +1,4 @@
+// 该组件用来实验节点文本更新功能
 import React from "React";
 class HelloClass extends React.Component{
   constructor( props ) {

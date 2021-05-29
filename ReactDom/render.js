@@ -7,7 +7,6 @@ export function render(virtualNode,container,callback) {
 }
 
 function _render( dom, vnode, container ) {
-  debugger
   const ret = diffNode( dom, vnode );
   if ( container && ret.parentNode !== container ) {
       container.appendChild( ret );
@@ -15,7 +14,10 @@ function _render( dom, vnode, container ) {
   return ret;
 }
 
-function diffNode(realNode,virtualNode,container) {
+// 注意更新节点的本质就是对节点的更新或对内部节点内容的更新
+// diffNode函数基本上不修改节点，他会返回一个新的diffNode，用来操作
+// 但是如果文本节点的更改都是发生在diffNode中
+function diffNode(realNode,virtualNode) {
   let diffRes = realNode;
   if (virtualNode === undefined || virtualNode === null || typeof virtualNode === "boolean") virtualNode = "";
 
@@ -63,10 +65,33 @@ function diffNode(realNode,virtualNode,container) {
   // 以上过程是虚拟节点的更换过程但是不具有diff比对效果，所以重新修改
 
   // 添加属性
-  virtualNode.props && Object.keys(virtualNode.props).forEach(key => setAttribute(diffRes,key, virtualNode.props[key]));
+  diffAttributes(diffRes,virtualNode)
+  // virtualNode.props && Object.keys(virtualNode.props).forEach(key => setAttribute(diffRes,key, virtualNode.props[key]));
   // 开始套娃，套子节点
+  if ( virtualNode.children && virtualNode.children.length > 0 || ( diffRes.childNodes && diffRes.childNodes.length > 0 ) ) {
+    diffChildrenRender(diffRes,virtualNode.children)
+  }
+
   // virtualNode.children.forEach(child => render(child,diffRes));
   return diffRes;
+}
+
+function diffChildrenRender(dom,vChildren) {
+  const rChildren = dom.childNodes;
+  vChildren.forEach((vChild,index) => {
+    let rChild;
+    if(rChildren && rChildren.length>0){
+      rChild = rChildren[index];
+    } 
+    const diffChild = diffNode( rChild, vChild );
+    if ( diffChild && diffChild !== dom && diffChild !== rChild ) {
+      if ( !rChild ) {
+          dom.appendChild( diffChild );
+      } else if ( diffChild === rChild.nextSibling ) {
+          removeNode( rChild );
+      }
+    }
+  })
 }
 
 function diffComponent( dom, vnode ) {
@@ -172,10 +197,10 @@ export function renderComponent( component ) {
   } else if ( component.componentDidMount ) {
     component.componentDidMount();
   }
-  // 找到父节点，通过父节点更新节点
-  if ( component.base && component.base.parentNode ) {
-    component.base.parentNode.replaceChild( replaceNode, component.base );
-  }
+  // // 找到父节点，通过父节点更新节点
+  // if ( component.base && component.base.parentNode ) {
+  //   component.base.parentNode.replaceChild( replaceNode, component.base );
+  // }
   // 用 component.base 保存已经更新的节点元素
   component.base = replaceNode;
   // 形成闭环
@@ -187,9 +212,41 @@ function isSameNodeType( dom, vnode ) {
       return dom.nodeType === 3;
   }
 
-  if ( typeof vnode.tag === 'string' ) {
-      return dom.nodeName.toLowerCase() === vnode.tag.toLowerCase();
+  if ( typeof vnode.type === 'string' ) {
+      return dom.nodeName.toLowerCase() === vnode.type.toLowerCase();
   }
 
-  return dom && dom._component && dom._component.constructor === vnode.tag;
+  return dom && dom._component && dom._component.constructor === vnode.type;
 }
+
+// 
+function diffAttributes( dom, vnode ) {
+  const old = {};    // 当前DOM的属性
+  const attrs = vnode.props;     // 虚拟DOM的属性
+  for ( let i = 0; i < dom.attributes.length; i++ ) {
+      const attr = dom.attributes[ i ];
+      old[ attr.name ] = attr.value;
+  }
+  // 如果原来的属性不在新的属性当中，则将其移除掉（属性值设为undefined）
+  for ( const name in old ) {
+
+      if ( !( name in attrs ) ) {
+          setAttribute( dom, name, undefined );
+      }
+
+  }
+
+  // 更新新的属性值
+  for ( const name in attrs ) {
+
+      if ( old[ name ] !== attrs[ name ] ) {
+          setAttribute( dom, name, attrs[ name ] );
+      }
+
+  }
+
+}
+
+document.addEventListener("DOMSubtreeModified", function(e){
+  console.log(`本次修改位置：${e.srcElement}，修改内容：${e.target}`);
+}, false);
