@@ -23,7 +23,7 @@ class Remove extends React.Component{
             <div id="observe1">观察节点</div>:
             ''
         }
-        <button onClick={this.handleClick.bind(this)}>{this.state.showContent?'删除':'回复内容'}</button>
+        <button onClick={this.handleDelete.bind(this)}>{this.state.showContent?'删除':'回复内容'}</button>
         <button onClick={this.handleAdd.bind(this)}>恢复内容</button>
       </div>
     );
