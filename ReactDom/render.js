@@ -89,6 +89,8 @@ function diffChildrenRender(dom,vChildren) {
           dom.appendChild( diffChild );
       } else if ( diffChild === rChild.nextSibling ) {
           removeNode( rChild );
+      } else {
+        dom.insertBefore( diffChild, rChild );
       }
     }
   })
