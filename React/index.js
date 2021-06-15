@@ -1,4 +1,5 @@
  import ReactDom from '../ReactDom/index';
+ import {enqueueSetState} from "./setStateQueue"
 /**
  * 生成React虚拟节点
  */
@@ -16,10 +17,7 @@ class Component {
     this.props = props;
   }
   setState(changeVal){
-    // 这里用尝试用异步的方法更新内容
-    Object.assign(this.state, changeVal)
-    // 利用renderComponent方法去重新渲染组件
-    ReactDom.renderComponent(this);
+    enqueueSetState(changeVal,this)
   }
 }
 
