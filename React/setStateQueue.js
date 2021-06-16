@@ -3,23 +3,20 @@ import { renderComponent } from '../ReactDom/render'
 const setStateQueue = [];
 const renderQueue = [];
 
-function defer( fn ) {
-    return Promise.resolve().then( fn );
-}
 
 export function enqueueSetState( stateChange, component ) {
+  // 如果queue的长度是0，也就是在上次flush执行之后第一次往队列里添加
+  if ( setStateQueue.length === 0 ) {
+    Promise.resolve().then( flush );
+  }
+  setStateQueue.push({
+    stateChange,
+    component
+  });
 
-    if ( setStateQueue.length === 0 ) {
-        defer( flush );
-    }
-    setStateQueue.push( {
-        stateChange,
-        component
-    } );
-
-    if ( !renderQueue.some( item => item === component ) ) {
-        renderQueue.push( component );
-    }
+  if ( !renderQueue.some( item => item === component ) ) {
+      renderQueue.push( component );
+  }
 }
 
 function flush() {
@@ -44,7 +41,7 @@ function flush() {
         component.prevState = component.state;
 
     }
-
+    // 这样在一次“事件循环“中，最多只会执行一次flush了，在这个“事件循环”中，所有的setState都会被合并，并只渲染一次组件。
     while( component = renderQueue.shift() ) {
         renderComponent( component );
     }

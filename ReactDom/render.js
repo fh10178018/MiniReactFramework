@@ -79,10 +79,7 @@ function diffNode(realNode,virtualNode) {
 function diffChildrenRender(dom,vChildren) {
   const rChildren = dom.childNodes;
   vChildren.forEach((vChild,index) => {
-    let rChild;
-    if(rChildren && rChildren.length>0){
-      rChild = rChildren[index];
-    } 
+    let rChild = rChildren[index];
     const diffChild = diffNode( rChild, vChild );
     if ( diffChild && diffChild !== dom && diffChild !== rChild ) {
       if ( !rChild ) {
@@ -90,7 +87,7 @@ function diffChildrenRender(dom,vChildren) {
       } else if ( diffChild === rChild.nextSibling ) {
           removeNode( rChild );
       } else {
-        dom.insertBefore( diffChild, rChild );
+        dom.insertBefore( diffChild, rChildren[index] );
       }
     }
   })
